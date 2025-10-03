@@ -1,14 +1,59 @@
 import { Link } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
-import AboutScreen from "./about";
+import {Image} from 'expo-image';
+import ImageViewer from "@/components/ImageViewer";
+import Button from '@/components/Button'
+import * as ImagePicker from 'expo-image-picker';
+import {useState} from 'react';
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+
 
 export default function Index() {
+
+  const [selectedImage,setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions,setShowAppOptions] = useState<boolean>(false);
+
+  const pickImageAsync =async()=>{
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes:['images'],
+      allowsEditing:true,
+      quality:1,
+    });
+
+    if(!result.canceled){
+
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    }else{
+      alert('you did not select any image.');
+    }
+  };
+
+  const onreset =()=>{
+    setShowAppOptions(false);
+  };
+  const onAddSticekr = ()=>{
+
+  };
+  
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Home screen.</Text>
-      <Link href="./about">
-        <Text style={styles.button}>Go to About screen</Text>
-      </Link>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+      </View>
+      {showAppOptions?(
+        <View/>
+      ):(
+      <View style={styles.footerContainer}>
+        <Button theme="primary" label = "Choose a foto" onPress={pickImageAsync}/>
+        <Button label = "Use this foto" onPress={()=> setShowAppOptions(true)}/>
+      </View>
+      )}
     </View>
   );
 }
@@ -18,14 +63,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#25292e',
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  text: {
-    color: '#fff',
+   imageContainer: {
+    flex: 1,
   },
-  button: {
-    fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff',
+  image: {
+    width: 320,
+    height: 440,
+    borderRadius: 18,
   },
+   footerContainer: {
+    flex: 1 / 4,
+    alignItems: 'center',
+  },
+
 });
